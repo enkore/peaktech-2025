@@ -3,7 +3,8 @@ Peaktech 2025 DMM USB interface
 USB ID 2571:4100
 
 USB interface is online when the DMM is powered off, I assume the USB controller is
-entirely bus powered and a e.g. serial interface is opto-coupled to it.
+entirely bus powered and a serial interface is opto-coupled to it (it even says RS-232 in
+the LCD). Auto power off is disabled when USB/RS232 is enabled (connection does _not_ matter).
 
 hiddev0,hidraw6: USB HID v1.10 Device [CHIPMAST TECH HLCUSB01] on usb-0000:00:13.0-2/input0
 
@@ -146,4 +147,5 @@ Byte 7
 Byte 8
 0x3D Ω (it is probably only a single bit indicating Ohms mode ; nothing from the other four bits)
 
-Tooling might or might not be open sourced at a later point.
+Python script attached. A libsigrok driver would be better, but I don't feel like bothering with the
+glib based code base right now.
