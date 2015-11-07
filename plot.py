@@ -53,4 +53,4 @@ axes.xaxis.set_major_formatter(date_formatter)
 if args.output:
     fig.savefig(args.output, format=args.format)
 else:
-    fig.show()
+    plt.show()
