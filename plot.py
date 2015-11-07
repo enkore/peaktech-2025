@@ -39,7 +39,7 @@ time_series = matplotlib.dates.date2num(time_series)
 fig = plt.figure()
 if args.file:
     plt.title(args.file)
-plt.plot_date(time_series, value_series, marker=".", ms=1.5)
+plt.plot_date(time_series, value_series, marker=".", ms=1.5 if args.output else 10)
 plt.ylabel(y_unit)
 plt.tick_params(axis="x", labelsize=8)
 plt.grid(which='major', axis='both')
