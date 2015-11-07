@@ -1,0 +1,149 @@
+Peaktech 2025 DMM USB interface
+
+USB ID 2571:4100
+
+USB interface is online when the DMM is powered off, I assume the USB controller is
+entirely bus powered and a e.g. serial interface is opto-coupled to it.
+
+hiddev0,hidraw6: USB HID v1.10 Device [CHIPMAST TECH HLCUSB01] on usb-0000:00:13.0-2/input0
+
+Bus 009 Device 003: ID 2571:4100  
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               1.10
+  bDeviceClass            0 
+  bDeviceSubClass         0 
+  bDeviceProtocol         0 
+  bMaxPacketSize0         8
+  idVendor           0x2571 
+  idProduct          0x4100 
+  bcdDevice            1.00
+  iManufacturer           1 CHIPMAST TECH
+  iProduct                2 HLCUSB01
+  iSerial                 0 
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength           34
+    bNumInterfaces          1
+    bConfigurationValue     1
+    iConfiguration          0 
+    bmAttributes         0xa0
+      (Bus Powered)
+      Remote Wakeup
+    MaxPower              100mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           1
+      bInterfaceClass         3 Human Interface Device
+      bInterfaceSubClass      1 Boot Interface Subclass
+      bInterfaceProtocol      2 Mouse
+      iInterface              0 
+        HID Device Descriptor:
+          bLength                 9
+          bDescriptorType        33
+          bcdHID               1.10
+          bCountryCode            0 Not supported
+          bNumDescriptors         1
+          bDescriptorType        34 Report
+          wDescriptorLength      29
+          Report Descriptor: (length is 29)
+            Item(Global): Usage Page, data= [ 0x00 0xff ] 65280
+                            (null)
+            Item(Local ): Usage, data= [ 0x01 ] 1
+                            (null)
+            Item(Main  ): Collection, data= [ 0x01 ] 1
+                            Application
+            Item(Local ): Usage Minimum, data= [ 0x01 ] 1
+                            (null)
+            Item(Local ): Usage Maximum, data= [ 0x08 ] 8
+                            (null)
+            Item(Global): Logical Minimum, data= [ 0x00 ] 0
+            Item(Global): Logical Maximum, data= [ 0xff 0x00 ] 255
+            Item(Global): Report Size, data= [ 0x08 ] 8
+            Item(Global): Report Count, data= [ 0x08 ] 8
+            Item(Main  ): Input, data= [ 0x02 ] 2
+                            Data Variable Absolute No_Wrap Linear
+                            Preferred_State No_Null_Position Non_Volatile Bitfield
+            Item(Local ): Usage Minimum, data= [ 0x01 ] 1
+                            (null)
+            Item(Local ): Usage Maximum, data= [ 0x08 ] 8
+                            (null)
+            Item(Main  ): Output, data= [ 0x02 ] 2
+                            Data Variable Absolute No_Wrap Linear
+                            Preferred_State No_Null_Position Non_Volatile Bitfield
+            Item(Main  ): End Collection, data=none
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x82  EP 2 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0008  1x 8 bytes
+        bInterval              10
+can't get debug descriptor: Resource temporarily unavailable
+Device Status:     0x0000
+  (Bus Powered)
+
+sudo usbhid-dump -d 2571:4100 -e s
+
+Each report is 8 bytes long. It seems this is the same bitstream that
+the LCD controller receives, except there is no bargraph data here
+(which might be generated automatically by the LCD controller by
+looking at the two leftmost BCD numbers).
+
+Byte 1
+decimal point:
+  0x00 none
+  0x01 0.000
+  0x02 00.00
+  0x04 000.0
+
+0x20 no sign (positive)
+0x40 minus sign
+0x90 - always set
+
+Bytes 2 & 3
+displayed value in BCD
+except 0x4F4C, which displays "OL." (overload)
+
+Byte 4
+0x01 - probably bargraph enable
+0x02 HOLD
+0x04 REL
+0x08 AC
+0x10 DC
+0x20 AUTO (range)
+
+Byte 5
+0x02 n (nano prefix)
+0x10 MIN
+0x20 MAX
+
+Byte 6
+0x04 diode test symbol
+0x10 M (mega prefix)
+0x20 k (kilo prefix)
+0x40 m (milli prefix)
+0x80 µ (micro prefix)
+
+Byte 7
+0x01 °F
+0x02 °C
+0x04 F
+0x08 Hz
+0x10 hFE
+0x40 A
+0x80 V
+
+Byte 8
+0x3D Ω (it is probably only a single bit indicating Ohms mode ; nothing from the other four bits)
+
+Tooling might or might not be open sourced at a later point.
